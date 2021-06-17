@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/Tulum_Reseva_2.js"></script>
+        <script src="data/Tulum_Transferencia_3.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[20.197691452849043,-87.47601873837309],[20.230347467894813,-87.41557451898208]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://qroo.gob.mx/agepro/" target="_blank">AGEPRO. Dir. Control Patrimonial</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href=""></a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleMaps_0');
+        map.getPane('pane_GoogleMaps_0').style.zIndex = 400;
+        var layer_GoogleMaps_0 = L.tileLayer('http://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleMaps_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 22
+        });
+        layer_GoogleMaps_0;
+        map.addLayer(layer_GoogleMaps_0);
+        map.createPane('pane_GoogleSatellite_1');
+        map.getPane('pane_GoogleSatellite_1').style.zIndex = 401;
+        var layer_GoogleSatellite_1 = L.tileLayer('http://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatellite_1',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 22
+        });
+        layer_GoogleSatellite_1;
+        map.addLayer(layer_GoogleSatellite_1);
+        function pop_Tulum_Reseva_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>NUM_ESCR</strong><br />' + (feature.properties['NUM_ESCR'] !== null ? autolinker.link(feature.properties['NUM_ESCR'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">NUM</th>\
+                        <td>' + (feature.properties['NUM'] !== null ? autolinker.link(feature.properties['NUM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MUNICIPIO</th>\
+                        <td>' + (feature.properties['MUNICIPIO'] !== null ? autolinker.link(feature.properties['MUNICIPIO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LOCALIDAD</th>\
+                        <td>' + (feature.properties['LOCALIDAD'] !== null ? autolinker.link(feature.properties['LOCALIDAD'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">REG</th>\
+                        <td>' + (feature.properties['REG'] !== null ? autolinker.link(feature.properties['REG'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SMZ</th>\
+                        <td>' + (feature.properties['SMZ'] !== null ? autolinker.link(feature.properties['SMZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MANZANA</th>\
+                        <td>' + (feature.properties['MANZANA'] !== null ? autolinker.link(feature.properties['MANZANA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LOTE</th>\
+                        <td>' + (feature.properties['LOTE'] !== null ? autolinker.link(feature.properties['LOTE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SUB_LOTE</th>\
+                        <td>' + (feature.properties['SUB_LOTE'] !== null ? autolinker.link(feature.properties['SUB_LOTE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">DESCRIP</th>\
+                        <td>' + (feature.properties['DESCRIP'] !== null ? autolinker.link(feature.properties['DESCRIP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CC_CAT</th>\
+                        <td>' + (feature.properties['CC_CAT'] !== null ? autolinker.link(feature.properties['CC_CAT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FOLIO</th>\
+                        <td>' + (feature.properties['FOLIO'] !== null ? autolinker.link(feature.properties['FOLIO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FOL_ORGN</th>\
+                        <td>' + (feature.properties['FOL_ORGN'] !== null ? autolinker.link(feature.properties['FOL_ORGN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                                               <th scope="row">SUP_DOC</th>\
+                        <td>' + (feature.properties['SUP_DOC'] !== null ? autolinker.link(feature.properties['SUP_DOC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SUP_SIG</th>\
+                        <td>' + (feature.properties['SUP_SIG'] !== null ? autolinker.link(feature.properties['SUP_SIG'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SUP_FISICA</th>\
+                        <td>' + (feature.properties['SUP_FISICA'] !== null ? autolinker.link(feature.properties['SUP_FISICA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">DOC_PROP</th>\
+                        <td>' + (feature.properties['DOC_PROP'] !== null ? autolinker.link(feature.properties['DOC_PROP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FECHA_PROP</th>\
+                        <td>' + (feature.properties['FECHA_PROP'] !== null ? autolinker.link(feature.properties['FECHA_PROP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OF_SUBDIV</th>\
+                        <td>' + (feature.properties['OF_SUBDIV'] !== null ? autolinker.link(feature.properties['OF_SUBDIV'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FECHA_SUBD</th>\
+                        <td>' + (feature.properties['FECHA_SUBD'] !== null ? autolinker.link(feature.properties['FECHA_SUBD'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OF_RECT</th>\
+                        <td>' + (feature.properties['OF_RECT'] !== null ? autolinker.link(feature.properties['OF_RECT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ESC_PROT</th>\
+                        <td>' + (feature.properties['ESC_PROT'] !== null ? autolinker.link(feature.properties['ESC_PROT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FECHA_PROT</th>\
+                        <td>' + (feature.properties['FECHA_PROT'] !== null ? autolinker.link(feature.properties['FECHA_PROT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">USO_DOC</th>\
+                        <td>' + (feature.properties['USO_DOC'] !== null ? autolinker.link(feature.properties['USO_DOC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">USO_SUELO</th>\
+                        <td>' + (feature.properties['USO_SUELO'] !== null ? autolinker.link(feature.properties['USO_SUELO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">DENSIDAD</th>\
+                        <td>' + (feature.properties['DENSIDAD'] !== null ? autolinker.link(feature.properties['DENSIDAD'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ESTATUS</th>\
+                        <td>' + (feature.properties['ESTATUS'] !== null ? autolinker.link(feature.properties['ESTATUS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">DOC_ESTUS</th>\
+                        <td>' + (feature.properties['DOC_ESTUS'] !== null ? autolinker.link(feature.properties['DOC_ESTUS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FECHA_CONT</th>\
+                        <td>' + (feature.properties['FECHA_CONT'] !== null ? autolinker.link(feature.properties['FECHA_CONT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ADQRNTE</th>\
+                        <td>' + (feature.properties['ADQRNTE'] !== null ? autolinker.link(feature.properties['ADQRNTE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SUP_CONT</th>\
+                        <td>' + (feature.properties['SUP_CONT'] !== null ? autolinker.link(feature.properties['SUP_CONT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FOL_TIT</th>\
+                        <td>' + (feature.properties['FOL_TIT'] !== null ? autolinker.link(feature.properties['FOL_TIT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FECHA_TIT</th>\
+                        <td>' + (feature.properties['FECHA_TIT'] !== null ? autolinker.link(feature.properties['FECHA_TIT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIT_POR</th>\
+                        <td>' + (feature.properties['TIT_POR'] !== null ? autolinker.link(feature.properties['TIT_POR'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MODIF</th>\
+                        <td>' + (feature.properties['MODIF'] !== null ? autolinker.link(feature.properties['MODIF'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FECHA_MDIF</th>\
+                        <td>' + (feature.properties['FECHA_MDIF'] !== null ? autolinker.link(feature.properties['FECHA_MDIF'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">TIPO_RES</th>\
+                        <td>' + (feature.properties['TIPO_RES'] !== null ? autolinker.link(feature.properties['TIPO_RES'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">VAL_CAT</th>\
+                        <td>' + (feature.properties['VAL_CAT'] !== null ? autolinker.link(feature.properties['VAL_CAT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FECHA_CAT</th>\
+                        <td>' + (feature.properties['FECHA_CAT'] !== null ? autolinker.link(feature.properties['FECHA_CAT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBS</th>\
+                        <td>' + (feature.properties['OBS'] !== null ? autolinker.link(feature.properties['OBS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['SUBD_PDF'] !== null ? autolinker.link(feature.properties['SUBD_PDF'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Tulum_Reseva_2_0(feature) {
+            switch(String(feature.properties['ESTATUS'])) {
+                case 'CONTRATADA':
+                    return {
+                pane: 'pane_Tulum_Reseva_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(0,197,255,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'EQUIPAMIENTO':
+                    return {
+                pane: 'pane_Tulum_Reseva_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(38,115,0,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'LITIGIO':
+                    return {
+                pane: 'pane_Tulum_Reseva_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(197,64,255,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'POSESION':
+                    return {
+                pane: 'pane_Tulum_Reseva_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(156,156,156,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'RESERVA DISPONIBLE':
+                    return {
+                pane: 'pane_Tulum_Reseva_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(170,255,0,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'RESERVA INVADIDA':
+                    return {
+                pane: 'pane_Tulum_Reseva_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(250,242,0,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'TITULADA':
+                    return {
+                pane: 'pane_Tulum_Reseva_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(230,0,0,1.0)',
+                interactive: true,
+            }
+                    break;
+                case 'TITULADA_H':
+                    return {
+                pane: 'pane_Tulum_Reseva_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(215,158,158,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_Tulum_Reseva_2');
+        map.getPane('pane_Tulum_Reseva_2').style.zIndex = 402;
+        map.getPane('pane_Tulum_Reseva_2').style['mix-blend-mode'] = 'normal';
+        var layer_Tulum_Reseva_2 = new L.geoJson(json_Tulum_Reseva_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Tulum_Reseva_2',
+            layerName: 'layer_Tulum_Reseva_2',
+            pane: 'pane_Tulum_Reseva_2',
+            onEachFeature: pop_Tulum_Reseva_2,
+            style: style_Tulum_Reseva_2_0,
+        });
+        bounds_group.addLayer(layer_Tulum_Reseva_2);
+        map.addLayer(layer_Tulum_Reseva_2);
+        function pop_Tulum_Transferencia_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">NUM_ESCR</th>\
+                        <td>' + (feature.properties['NUM_ESCR'] !== null ? autolinker.link(feature.properties['NUM_ESCR'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">MUNICIPIO</th>\
+                        <td>' + (feature.properties['MUNICIPIO'] !== null ? autolinker.link(feature.properties['MUNICIPIO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LOCALIDAD</th>\
+                        <td>' + (feature.properties['LOCALIDAD'] !== null ? autolinker.link(feature.properties['LOCALIDAD'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">DESCRIP</th>\
+                        <td>' + (feature.properties['DESCRIP'] !== null ? autolinker.link(feature.properties['DESCRIP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CC_CAT</th>\
+                        <td>' + (feature.properties['CC_CAT'] !== null ? autolinker.link(feature.properties['CC_CAT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>FOLIO</strong><br />' + (feature.properties['FOLIO'] !== null ? autolinker.link(feature.properties['FOLIO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2"><strong>SUP_DOC</strong><br />' + (feature.properties['SUP_DOC'] !== null ? autolinker.link(feature.properties['SUP_DOC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">DOC_PROP</th>\
+                        <td>' + (feature.properties['DOC_PROP'] !== null ? autolinker.link(feature.properties['DOC_PROP'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OF_SUBDIV</th>\
+                        <td>' + (feature.properties['OF_SUBDIV'] !== null ? autolinker.link(feature.properties['OF_SUBDIV'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FECHA_SUBD</th>\
+                        <td>' + (feature.properties['FECHA_SUBD'] !== null ? autolinker.link(feature.properties['FECHA_SUBD'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OF_RECT</th>\
+                        <td>' + (feature.properties['OF_RECT'] !== null ? autolinker.link(feature.properties['OF_RECT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">FECHA_REC</th>\
+                        <td>' + (feature.properties['FECHA_REC'] !== null ? autolinker.link(feature.properties['FECHA_REC'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">OBS</th>\
+                        <td>' + (feature.properties['OBS'] !== null ? autolinker.link(feature.properties['OBS'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Tulum_Transferencia_3_0() {
+            return {
+                pane: 'pane_Tulum_Transferencia_3',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Tulum_Transferencia_3');
+        map.getPane('pane_Tulum_Transferencia_3').style.zIndex = 403;
+        map.getPane('pane_Tulum_Transferencia_3').style['mix-blend-mode'] = 'normal';
+        var layer_Tulum_Transferencia_3 = new L.geoJson(json_Tulum_Transferencia_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Tulum_Transferencia_3',
+            layerName: 'layer_Tulum_Transferencia_3',
+            pane: 'pane_Tulum_Transferencia_3',
+            onEachFeature: pop_Tulum_Transferencia_3,
+            style: style_Tulum_Transferencia_3_0,
+        });
+        bounds_group.addLayer(layer_Tulum_Transferencia_3);
+        map.addLayer(layer_Tulum_Transferencia_3);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/Tulum_Transferencia_3.png" /> Tulum_Transferencia': layer_Tulum_Transferencia_3,'Tulum_Reseva<br /><table><tr><td style="text-align: center;"><img src="legend/Tulum_Reseva_2_CONTRATADA0.png" /></td><td>CONTRATADA</td></tr><tr><td style="text-align: center;"><img src="legend/Tulum_Reseva_2_EQUIPAMIENTO1.png" /></td><td>EQUIPAMIENTO</td></tr><tr><td style="text-align: center;"><img src="legend/Tulum_Reseva_2_LITIGIO2.png" /></td><td>LITIGIO</td></tr><tr><td style="text-align: center;"><img src="legend/Tulum_Reseva_2_POSESION3.png" /></td><td>POSESION</td></tr><tr><td style="text-align: center;"><img src="legend/Tulum_Reseva_2_RESERVADISPONIBLE4.png" /></td><td>RESERVA DISPONIBLE</td></tr><tr><td style="text-align: center;"><img src="legend/Tulum_Reseva_2_RESERVAINVADIDA5.png" /></td><td>RESERVA INVADIDA</td></tr><tr><td style="text-align: center;"><img src="legend/Tulum_Reseva_2_TITULADA6.png" /></td><td>TITULADA</td></tr><tr><td style="text-align: center;"><img src="legend/Tulum_Reseva_2_TITULADAH7.png" /></td><td>TITULADA_H</td></tr></table>': layer_Tulum_Reseva_2,"Google Satellite": layer_GoogleSatellite_1,"Google Maps": layer_GoogleMaps_0,}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_Tulum_Reseva_2,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'FOLIO'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        resetLabels([layer_Tulum_Transferencia_3]);
+        map.on("zoomend", function(){
+            resetLabels([layer_Tulum_Transferencia_3]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_Tulum_Transferencia_3]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_Tulum_Transferencia_3]);
+        });
+        </script>
+    </body>
+</html>
